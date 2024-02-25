@@ -1,0 +1,12 @@
+pymongo
+certifi
+fastapi
+pytz
+PyJWT
+websockets
+uvicorn
+gunicorn
+asyncio
+jinja2
+pydantic
+sse-starlette 
