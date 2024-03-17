@@ -137,8 +137,8 @@
         {#arr.push(new Array(cur_loc.coords.latitude,cur_loc.coords.longitude));#}
         {#document.getElementsByClassName('stages')[0].innerText=arr.length+" Stages Added";#}
         const protocol = window.location.protocol.includes('https') ? 'wss' : 'ws';
-        ws = new WebSocket(`${protocol}://fleetmanager.onrender.com/apis/EstablishConnectionWithServer/`);
-        ws.onopen = () => ws.send(JSON.stringify({"message": "connectionRequest", "busId": "{{busId}}"}));
+        ws = new WebSocket(`${protocol}://${localhost}/apis/EstablishConnectionWithServer/`);
+        ws.onopen = () => ws.send(JSON.stringify({"message": "connectionRequest", "busPlateNumber": "{{busPlateNumber}}"}));
         const accuracyThreshold = 100; // meters
 
         navigator.geolocation.watchPosition(position => {
@@ -146,7 +146,7 @@
                 const locationData = {
                     "vehicleCoord": [position.coords.latitude, position.coords.longitude],
                     "message": "New Location",
-                    "busId": "{{ busId }}",
+                    "busPlateNumber": "{{ busPlateNumber }}",
                     "accuracy": position.coords.accuracy
                 };
                 console.log(locationData);

@@ -391,93 +391,9 @@ body{
 
 
 
-.container3 {
+.container2 {
   display: flex; /* Set container to flex */
   align-items: center; /* Align items vertically in the center */
-}
-
-.container2 {
-  width: 78%;
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 20px; 
-  margin: 10px 30px 30px 318px;
-  box-shadow: rgba(50, 50, 93, .1) 0 2px 5px 0, rgba(0, 0, 0, .07) 0 1px 1px 0; 
-  text-align: center;
-}
-
-.stage-input {
-  margin-bottom: 10px;
-  margin-top: 10px;
-}
-
-.stage-input label {
-  margin-top: 0px;
-  font-weight: bold;
-  font-size: 15px;
-}
-
-.stage-input input {
-  width: 20%;
-  padding: 10px;
-  border: 1px solid #d6d6d6;
-  border-radius: 3px;
-}
-
-.addBusForm input {
-  padding: 10px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  font-size: 15px;
-}
-
-/* Styles for the Add Stage button */
-.add-stage-button {
-  background-color: #405cf5;
-  border-radius: 6px;
-  border: none;
-  box-shadow: rgba(50, 50, 93, .1) 0 2px 5px 0, rgba(0, 0, 0, .07) 0 1px 1px 0;
-  color: #fff;
-  font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
-  font-size: 16px; 
-  height: 44px;
-  line-height: 44px;
-  padding: 0 25px;
-  text-align: center;
-  text-transform: none;
-  transition: all .2s, box-shadow .08s ease-in;
-  width: auto;
-  vertical-align: middle; /* Align the button vertically with labels */
-}
-
-/* Styles for the Calculate Route button */
-.calculate-route-button {
-  background-color: #405cf5;
-  border-radius: 6px;
-  border: none;
-  box-shadow: rgba(50, 50, 93, .1) 0 2px 5px 0, rgba(0, 0, 0, .07) 0 1px 1px 0;
-  color: #fff;
-  font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
-  font-size: 16px; 
-  height: 44px;
-  line-height: 44px;
-  padding: 0 25px;
-  text-align: center;
-  text-transform: none;
-  transition: all .2s, box-shadow .08s ease-in;
-  width: auto;
-  margin-bottom:10px;
-  vertical-align: middle; /* Align the button vertically with labels */
-}
-
-/* Ensure labels and button are on the same line */
-.stage-input label,
-.stage-input input,
-.add-stage-button {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 10px; /* Adjust spacing between elements */
-  margin-top: 10px;
 }
 
 
@@ -606,32 +522,12 @@ body{
     
     .container1 {
       width: auto;
-      height: 65vh; 
+      height: 75vh; 
       margin: 15px 10px 0 10px; 
       overflow:auto; 
       position: relative;
       z-index: 1; 
     }
-    .container2 {
-      width: auto;
-      padding: 20px; 
-      margin: 15px 10px 10px 10px;
-    }
-    
-    .stage-input {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .stage-input label {
-      margin-top: 10px;
-    }
-    
-    .stage-input input {
-      width: 100%; 
-    }
-    
-
     
 }
 
