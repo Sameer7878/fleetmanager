@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Vehicle Tracking System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/98905b9c10.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/dashboard.css" />
+</head>
+<body class="hero-anime">
+    <div class="navigation-wrap bg-light start-header start-style">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <nav class="navbar navbar-expand-md navbar-light">
+
+                        <a class="navbar-brand" href="#" target="_blank">
+                            <div class="logo-container">
+                                <img src="/static/assets/images/logo.png" alt="">
+                                <span class="logo-text">Vehicle Tracking System</span>
+                            </div>
+                        </a>
+                        
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto py-4 py-md-0">
+                                <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                                    <a class="nav-link" href="/">Home</a>
+                                </li>
+                               
+                                <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                                    <a class="nav-link" href="/">Dashboard</a>
+                                </li>
+                                <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Services</a>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{{ url_for('tracking') }}">Tracking</a>
+                                        <a class="dropdown-item" href="{{ url_for('routing') }}">Routing</a>
+                                        <a class="dropdown-item" href="/">Location History</a>
+                                        
+                                    </div>
+                                </li>
+                                <li class="nav-item pl-4 pl-md-0 ml-0 ml-md-4">
+                                    <a class="nav-link" href="#">Contact</a>
+                                </li>
+                            </ul>
+
+                            <div class="profile">
+                                <div class="dropdown">
+                                    <img src="/static/assets/images/profile.png" alt="profile" class="profile-image" onclick="toggleDropdown()">
+                                    <div id="registrationPopup" class="popup-content"></div>
+                                    <div id="dropdownMenu" class="dropdown-content">
+                                        <a href="{{ url_for('profile') }}" onclick="profile()">Profile</a>
+                                        <a href="{{ url_for('logout') }}" onclick="logout()">Logout</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="menu">
+        <div class="items">
+            <li><i class="fa fa-users" aria-hidden="true"></i><a href="/"> Dashboard</a></li>
+            <li><i class="fa fa-location-arrow" aria-hidden="true"></i><a href="{{ url_for('tracking') }}"> Route control</a></li>
+        </div>
+    </section>
+
+    <div class="values">
+        <div class="val-box">
+            <i class="fa fa-bus" aria-hidden="true"></i>
+            <div>
+                <h3>54</h3>
+                <span>Total Buses</span>
+            </div>
+        </div>
+        <div class="val-box">
+            <i class="fa fa-wrench" aria-hidden="true"></i>
+            <div>
+                <h3>2</h3>
+                <span>Inactive Buses</span>
+            </div>
+        </div>
+        <div class="val-box">
+            
+            <i class="fa-sharp fa-solid fa-list-check"  aria-hidden="true"></i>
+            <div>
+                <h3>52</h3>
+                <span>Active Buses</span>
+            </div>
+        </div>
+        <div class="outer-container">
+            <div class="n1">
+                <div class="search">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <input type="text" id="searchInput" placeholder="Search">
+
+                </div>
+            </div>
+            <div class="add-icon" data-toggle="modal" data-target="#addRowModal">
+                <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-labelledby="addRowModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addRowModalLabel">Add Details</h5> <!-- Default title for add form -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form for adding new row details -->
+                        <form id="addRowForm" onsubmit="saveFormData(); return false;">
+                            <!-- Form fields for adding new row details -->
+                            <div class="form-group">
+                                <label for="driverName">Driver Name</label>
+                                <input type="text" class="form-control" id="driverName" placeholder="Enter driver name">
+                            </div>
+                            <div class="form-group">
+                                <label for="phoneNumber">Phone Number</label>
+                                <input type="number" class="form-control" id="phoneNumber" placeholder="Enter phone number">
+                            </div>
+                            <div class="form-group">
+                                <label for="busNo">Bus No</label>
+                                <input type="number" class="form-control" id="busNo" placeholder="Enter bus number">
+                            </div>
+                            <div class="form-group">
+                                <label for="busPlate">Bus Plate</label>
+                                <input type="text" class="form-control" id="busPlate" placeholder="Enter bus plate">
+                            </div>
+                            <div class="form-group">
+                                <label for="imageUpload">Upload Image</label>
+                                <input type="file" class="form-control-file" id="imageUpload">
+                            </div>
+                            <div class="form-group">
+                                <label for="status">Status</label><br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="status" id="activeStatus" value="Active">
+                                    <label class="form-check-label" for="activeStatus">Active</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="status" id="inactiveStatus" value="Inactive">
+                                    <label class="form-check-label" for="inactiveStatus">Inactive</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="routes">Routes</label>
+                                <input type="text" class="form-control" id="routes" placeholder="Enter routes">
+                            </div>
+                            <!-- Add more input fields as needed -->
+                
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <dir class="board">
+            <table id="dataTable" width="100%">
+
+                <thead>
+                    <tr>
+                        <td>Driver Name</td>
+                        <td>Bus No</td>
+                        <td>Status</td>
+                        <td>Routes</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="people">
+                            <img src="/static/assets/images/profile.png" alt"profile">
+                            <div class="people-de">
+                                <h5>Pavan Kumar</h5>
+                                <p>9876543210</p>
+                            </div>
+                        </td>
+                        <td class="people-de">
+                        <h5>01</h5>
+                        <p>AP 26 3030</p>
+                    </td>
+                    <td class="active"><p>Active</p></td>
+
+                    <td class="role">
+                        <p>Gudur-vidyanagar</p>
+                    </td>
+                    <td class="edit"><a href="#">Edit</a></td>
+                    <td class="delete"><a href="#">Delete</a></td>
+                    </tr>
+                    <tr>
+                        <td class="people">
+                            <img src="/static/assets/images/profile.png" alt="">
+                            <div class="people-de">
+                                <h5>Dhatrish Chowdary</h5>
+                                <p>8974561230</p>
+                            </div>
+                        </td>
+                        <td class="people-de">
+                        <h5>02</h5>
+                        <p>AP 26 3026</p>
+                    </td>
+                    <td class="active"><p>Active</p></td>
+
+                    <td class="role">
+                        <p>Rapur - Vidyanagar</p>
+                    </td>
+                    <td class="edit"><a href="#">Edit</a></td>
+                    <td class="delete"><a href="#">Delete</a></td>
+                    </tr>
+                    <tr>
+                        <td class="people">
+                            <img src="/static/assets/images/profile.png" >
+                            <div class="people-de">
+                                <h5>Afridi</h5>
+                                <p>8974561230</p>
+                            </div>
+                        </td>
+                        <td class="people-de">
+                        <h5>03</h5>
+                        <p>AP 26 3015</p>
+                    </td>
+                    <td class="inactive"><p>Inactive</p></td>
+
+                    <td class="role">
+                        <p>Kota - Vidyanagar</p>
+                    </td>
+                    <td class="edit"><a href="#">Edit</a></td>
+                    <td class="delete"><a href="#">Delete</a></td>
+                    </tr>
+                    <tr>
+                        
+                        <td class="people">
+                            <img src="/static/assets/images/profile.png" alt"p">
+                            <div class="people-de">
+                                <h5>Finny</h5>
+                                <p>8974561230</p>
+                            </div>
+                        </td>
+                        <td class="people-de">
+                            <h5>04</h5>
+                            <p>AP 26 3002</p>
+                    </td>
+                    <td class="active"><p>Active</p></td>
+
+                    <td class="role">
+                        <p>Kota - Vidyanagar</p>
+                    </td>
+                    <td class="edit"><a href="#">Edit</a></td>
+                    <td class="delete"><a href="#">Delete</a></td>
+                    </tr><td class="people">
+                        <img src="/static/assets/images/profile.png" alt"p">
+                        <div class="people-de">
+                            <h5>Finny Daniel</h5>
+                            <p>8974561230</p>
+                        </div>
+                    </td>
+                    <td class="people-de">
+                        <h5>05</h5>
+                        <p>AP 26 3002</p>
+                </td>
+                <td class="inactive"><p>Inactive</p></td>
+
+                <td class="role">
+                    <p>Kota - Vidyanagar</p>
+                </td>
+                <td class="edit"><a href="#">Edit</a></td>
+                 <td class="delete"><a href="#">Delete</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </dir>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+function saveFormData() {
+    var formData = new FormData(document.getElementById("addRowModal"));
+    console.log("Form Data:", formData);
+    fetch('/save', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Server Response:", data);
+        // Assuming the response contains the saved data
+        var newRow = "<tr><td>" + data.driverName + "</td><td>" + data.busNo + "</td><td>" + data.status + "</td><td>" + data.routes + "</td><td class='edit'><a href='#'>Edit</a></td><td class='delete'><a href='#'>Delete</a></td></tr>";
+        document.querySelector("#dataTable tbody").insertAdjacentHTML('beforeend', newRow);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+        (function($) { "use strict";
+
+$(function() {
+  var header = $(".start-style");
+  $(window).scroll(function() {    
+    var scroll = $(window).scrollTop();
+  
+    if (scroll >= 10) {
+      header.removeClass('start-style').addClass("scroll-on");
+    } else {
+      header.removeClass("scroll-on").addClass('start-style');
+    }
+  });
+});   
+  
+//Animation
+
+$(document).ready(function() {
+  $('body.hero-anime').removeClass('hero-anime');
+});
+
+//Menu On Hover
+  
+$('body').on('mouseenter mouseleave','.nav-item',function(e){
+    if ($(window).width() > 750) {
+      var _d=$(e.target).closest('.nav-item');_d.addClass('show');
+      setTimeout(function(){
+      _d[_d.is(':hover')?'addClass':'removeClass']('show');
+      },1);
+    }
+}); 
+
+function toggleDropdown() {
+    var dropdownMenu = document.getElementById("dropdownMenu");
+    dropdownMenu.classList.toggle("show");
+}
+
+window.onclick = function(event) {
+    if (!event.target.matches('.profile-image')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+}
+
+function profile() {
+    // Your profile function logic here
+}
+
+function logout() {
+    // Your logout function logic here
+}
+
+$(document).ready(function() {
+        $('#searchInput').on('keyup', function() {
+            var value = $(this).val().toLowerCase();
+            $('tbody tr').filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+
+
+
+    
+})(jQuery); 
+    </script>
+</body>
+</html>

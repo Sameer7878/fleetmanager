@@ -1,88 +1,136 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+/* POPPINS FONT */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-body {
-  font-family: 'Open Sans', sans-serif;
-  background: #f9faff;
-  color: #3a3c47;
-  line-height: 1.6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0;
-  padding: 0;
+*{
+    font-family: 'Poppins', sans-serif;
 }
-
-h1 {
-  margin-top: 48px;
+.wrapper{
+    background: #ececec;
+    padding: 0 20px 0 20px;
 }
-
-form {
+.main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.side-image{
+    background-image: url("/assets/images/nbkr.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 10px 0 0 10px;
+    position: relative;
+    
+}
+.row{
+  width:  900px;
+  height:550px;
+  border-radius: 10px;
   background: #fff;
-  max-width: 360px;
-  width: 100%;
-  padding: 58px 44px;
-  border: 1px solid #e1e2f0; /* Fixed typo here */
-  border-radius: 4px;
-  box-shadow: 0 0 5px 0 rgba(42, 45, 48, 0.12);
-  transition: all 0.3s ease;
+  padding: 0px;
+  box-shadow: 5px 5px 10px 1px rgba(0,0,0,0.2);
 }
 
-.row {
+.right{
   display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
-
-.row label {
-  font-size: 13px;
-  color: #8086a9;
+.input-box{
+  width: 330px;
+  box-sizing: border-box;
 }
-
-.row input {
-  flex: 1;
-  padding: 13px;
-  border: 1px solid #d6d8e6;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: all 0.2s ease-out;
+img{
+    width: 35px;
+    position: absolute;
+    top: 30px;
+    left: 30px;
 }
-
-.row input:focus {
-  outline: none;
-  box-shadow: inset 2px 2px 5px 0 rgba(42, 45, 48, 0.12);
+.input-box header{
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 45px;
 }
-
-.row input::placeholder {
-  color: #c8cddf;
+.input-field{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 0 10px 0 10px;
 }
-
-button {
-  width: 100%;
-  padding: 12px;
-  font-size: 18px;
-  background: #15c39a;
-  color: #fff;
-  border: none;
-  border-radius: 100px;
-  cursor: pointer;
-  font-family: 'Open Sans', sans-serif;
-  margin-top: 15px;
-  transition: background 0.2s ease-out;
-}
-
-button:hover {
-  background: #55d3ac;
-}
-
-@media (max-width: 458px) { /* Removed extra space here */
-  body {
-    margin: 0 18px;
-  }
-  
-  form {
-    background: #f9faff;
+.input{
+    height: 45px;
+    width: 100%;
+    background: transparent;
     border: none;
-    box-shadow: none;
-    padding: 20px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    outline: none;
+    margin-bottom: 20px;
+    color: #40414a;
+}
+.input-box .input-field label{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    pointer-events: none;
+    transition: .5s;
+}
+.input-field input:focus ~ label
+   {
+    top: -10px;
+    font-size: 13px;
   }
+  .input-field input:valid ~ label
+  {
+   top: -10px;
+   font-size: 13px;
+   color: #5d5076;
+ }
+ .input-field .input:focus, .input-field .input:valid{
+    border-bottom: 1px solid #743ae1;
+ }
+ .submit{
+    border: none;
+    outline: none;
+    height: 45px;
+    background: #ececec;
+    border-radius: 5px;
+    transition: .4s;
+ }
+ .submit:hover{
+    background: rgba(37, 95, 156, 0.937);
+    color: #fff;
+ }
+ .forgot{
+    text-align: center;
+    font-size: small;
+    margin-top: 25px;
+}
+span a{
+    text-decoration: none;
+    font-weight: 700;
+    color: #000;
+    transition: .5s;
+}
+span a:hover{
+    text-decoration: underline;
+    color: #000;
+}
+
+@media only screen and (max-width: 768px) {
+    .side-image {
+        border-radius: 10px 10px 0 0;
+    }
+    img {
+        width: 35px;
+        position: absolute;
+        top: 20px;
+        left: 47%;
+    }
+    .row {
+        max-width: 420px;
+        width: 100%;
+    } 
+    
 }

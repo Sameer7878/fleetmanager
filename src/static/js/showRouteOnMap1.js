@@ -4,46 +4,6 @@
 /* global map */
 
 /* global alert*/
-const map = L.map('map').setView([14.028572109658956, 80.0218235993725], 15); // Set initial map view
-var selectedLocation = L.marker([0, 0], {draggable: true});
-selectedLocation.addTo(map);
-document.getElementById('locateMe').addEventListener('click', async () => {
-    "use strict";
-    const curLoc = await getLocationPromise();
-    console.log(curLoc);
-    map.setView(curLoc);
-    selectedLocation.setLatLng(curLoc);
-    document.getElementById('stage-coordinates').value = new Array(curLoc[0].toFixed(8), curLoc[1].toFixed(8));
-
-
-});
-//L.geoJSON(collegesGeoJSON, {
-//pointToLayer: function (feature, latlng) {
-// return L.circleMarker(latlng, collegeMarkerStyle);
-//}
-//}).addTo(map);
-// Add the OpenStreetMap tile layer
-const openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-    maxZoom: 20,
-}).addTo(map);
-const googleSatellite = L.tileLayer('http://{s}.google.com/vt?lyrs=y&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-});
-
-const googleStreets = L.tileLayer('http://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-});
-
-const baseMaps = {
-    "OpenStreetMap": openStreetMap,
-    "Google Streets": googleStreets,
-    "Google Satellite": googleSatellite
-};
-L.control.layers(baseMaps).addTo(map);
-
 function getData(url = '') {
     // Default options are marked with *
     return fetch(url)
@@ -60,7 +20,7 @@ const busMarker = L.marker([0, 0], {icon: busIcon}).addTo(map);
 busMarker.id = 'bus';
 let trail;
 
-function showRoute(stages, allPoints, busPlateNumber) {
+function showRoute(stages, allPoints, busId) {
     "use strict";
     map.eachLayer(function (layer) {
         // Check if the layer is a marker
@@ -72,7 +32,7 @@ function showRoute(stages, allPoints, busPlateNumber) {
             map.removeLayer(layer);
         }
     });
-    trail = L.polyline([], {color: 'red', weight: 4}).addTo(map);
+    trail=L.polyline([], {color: 'red', weight: 4}).addTo(map);
     console.log(stages, allPoints);
     for (var i = 0; i < stages.length; i++) {
         var marker = L.marker(stages[i].stageCoord).addTo(map);
@@ -88,13 +48,9 @@ function showRoute(stages, allPoints, busPlateNumber) {
 
     // Initialize an empty polyline for the bus's trail
     L.polyline(allPoints, // Outer stroke style
-        {color: ' #3333ff', opacity: 0.8, weight: 10}).addTo(map);
-    var shadowPolyline = L.polyline(allPoints, {color: 'black', weight: 14, opacity: 0.3}).addTo(map);
-
-        // Move the shadow polyline to the back
-        shadowPolyline.bringToBack();
+        {color: ' #3333ff', opacity: 0.8, weight: 5}).addTo(map);
     rotateMapToLocation(stages[0].stageCoord);
-    startTraacking(busPlateNumber, stages);
+    startTraacking(busId, stages);
 }
 
 // Function to update the bus marker's position and rotation and log distance
@@ -112,7 +68,7 @@ function updateBusMarker(location, stages) {
 
     rotateMapToLocation(latLng);
     busMarker.setLatLng(latLng);
-    //trail.addLatLng(latLng);
+    trail.addLatLng(latLng);
 
     // Add the current position to the bus's trail
 
@@ -190,11 +146,11 @@ function startTraacking(routeId, stages) {
     };
 }
 
-function getRouteDetails(busPlateNumber) {
+function getRouteDetails(busid) {
     "use strict";
-    getData('/apis/getRouteData/?busPlateNumber=' + busPlateNumber)
+    getData('/apis/getRouteData/?busId=' + busid)
         .then(data => {
-            showRoute(data.routeStageWithNames, data.routeAllCoord, busPlateNumber);
+            showRoute(data.routeStageWithNames, data.routeAllCoord, busid);
             console.log(data); // JSON data parsed by `response.json()` call
         })
         .catch(error => {

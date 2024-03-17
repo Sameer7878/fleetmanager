@@ -2,8 +2,9 @@
 This module contains all the API endpoints.
 """
 import sys
+
 sys.path.append('src')
-from controllers.appController import AppController,VehicleToServerConnectionManager
+from controllers.appController import AppController, VehicleToServerConnectionManager
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Request
 from pydantic import BaseModel
 import asyncio
@@ -12,23 +13,26 @@ import ast
 
 
 class AddRouteType(BaseModel):
-    driverName:str
-    allStages: list
     busNumber: str
+    busPlateNumber: str
+    driverName: str
+    driverMobile: str
+    allStages: list
     routeName: str
     routes: list
     areaName: str
 
+
 class NewLocation(BaseModel):
     locationCoord: list
-    busId: str
+    busPlateNumber: str
+
 
 appController = AppController()
 connectionManager = VehicleToServerConnectionManager()
 
-
 api = APIRouter(prefix="/apis",
-                   tags=[ "apis" ])
+                tags=[ "apis" ])
 
 
 @api.post('/addroute/')
@@ -36,16 +40,25 @@ async def addroute(request: Request, routeData: AddRouteType):
     return appController.createRoute(routeData)
 
 
-@api.get('/locationStream/{busId}/')
-async def locationStream(request: Request, busId):
-    return EventSourceResponse(appController.eventGenerator(busId, request),
+@api.get('/locationStream/{busPlateNumber}/')
+async def locationStream(request: Request, busPlateNumber):
+    return EventSourceResponse(appController.eventGenerator(busPlateNumber, request),
                                headers={"Cache-Control": "no-cache"})
 
+
 @api.get('/getRouteData/')
-async def getRouteData(request:Request):
-    routeDetails = appController.getRouteDetails(request.query_params.get("busId"))
+async def getRouteData(request: Request):
+    routeDetails = appController.getRouteDetails(request.query_params.get("busPlateNumber"))
     return routeDetails
 
+
+@api.post("/updateData/")
+async def updateData(request: Request):
+    rUpdateData = await request.json()
+    if request.query_params.get('type') == 'route':
+        route = appController.modifyRoute(rUpdateData)
+        return route
+    return {"error": "Invalid request type"}
 
 
 @api.websocket('/EstablishConnectionWithServer/')
@@ -58,19 +71,18 @@ async def websocket_endpoint(websocket: WebSocket):
             msgFromVehicle = ast.literal_eval(msgFromVehicle)
             if msgFromVehicle [ 'message' ] == 'connectionRequest':
                 await connectionManager.boardcast_to_single(
-                    {"busId": msgFromVehicle [ 'busId' ], "message": "Connection Established With Server"}, websocket)
+                    {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ], "message": "Connection Established With Server"}, websocket)
                 continue
             if await appController.updateBusNewLocation(msgFromVehicle [ 'vehicleCoord' ],
-                                                                    msgFromVehicle [ 'busId' ]):
+                                                        msgFromVehicle [ 'busPlateNumber' ]):
                 await connectionManager.boardcast_to_single(
-                    {"busId": msgFromVehicle [ 'busId' ], "message": "Location Updated"}, websocket)
+                    {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ], "message": "Location Updated"}, websocket)
             else:
                 await connectionManager.boardcast_to_single(
-                    {"busId": msgFromVehicle [ 'busId' ], "message": "Location Not Updated"}, websocket)
+                    {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ], "message": "Location Not Updated"}, websocket)
 
     except WebSocketDisconnect:
         await connectionManager.disconnect(websocket)
     except Exception as e:
         print(e.args, 'erre')
         pass
-

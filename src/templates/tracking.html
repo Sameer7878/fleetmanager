@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Vehicle Tracking System</title>
+    <title>Tracking - Vehicle Tracking System</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://kit.fontawesome.com/98905b9c10.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/routing.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/tracking.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
 </head>
 <body class="hero-anime">
@@ -19,7 +19,7 @@
 
                     <a class="navbar-brand" href="#" target="_blank">
                         <div class="logo-container">
-                            <img src="/static/assets/images/logo.png" alt="">
+                            <img src="/assets/images/logo.png" alt="">
                             <span class="logo-text">Vehicle Tracking System</span>
                         </div>
                     </a>
@@ -76,16 +76,17 @@
     <input type="text" id="searchInput" placeholder="Search drivers...">
     <div class="cards" id="cards">
         {% for route in  allRoutes %}
-            <div class="card" onclick="editRouteDetails('{{ route['busPlateNumber'] }}')" id="{{ route['busPlateNumber'] }}">
+            <div class="card" onclick="getRouteDetails('{{ route['busPlateNumber'] }}')">
                 <h2 class="driverName">{{ route['driverName'] }}</h2>
                 <p>{{ route['busNumber'] }}</p>
-                <p>{{ route['areaName'] }} ({{ route['routeName'] }})</p>
+                <p>{{ route['areaName']}} ({{route['routeName']}})</p>
             </div>
         {% endfor %}
+
     </div>
 </section>
-<div class="container3">
-    <h3 class="i-name">Routing</h3>
+<div class="container2">
+    <h3 class="i-name">Track Vehicle</h3>
     <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
 
 </div>
@@ -101,28 +102,13 @@
     </div>
 </div>
 
-<div class="container2">
-    <div id="waypoints-form" class="centered">
-        <label for="num-stages">Stages (Waypoints):</label>
-        <div id="stage-inputs" class="stage-input">
-            <label>Stage:</label>
-            <input type="text" id="stage-name" placeholder="Enter Stage Name...">
-            <input type="text" id="stage-coordinates" placeholder="Enter Stage Coordinates">
-            <button class="custom-button add-stage-button" onclick="addStage()">Add</button>
-        </div>
-    </div>
-    <button type="button" class="custom-button calculate-route-button" id="calculateRoute" onclick="calculateRoute()">Calculate Route
-    </button>
-</div>
-
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-<script src="/static/js/routing.js"></script>
+<script src="/static/js/showRouteOnMap.js"></script>
 <script>
     (function ($) {
         "use strict";
@@ -139,7 +125,6 @@
                 }
             });
         });
-
 
 //Animation
 

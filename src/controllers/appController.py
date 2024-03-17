@@ -20,27 +20,45 @@ class AppController:
     def createRoute(self, routeDetails):
         if not (routeDetails and routeDetails.allStages and routeDetails.routes):
             raise customApiError("Empty Stages or Route Data Not Found", 204)
-        routeDetails.allStages = [ {"stageName": x [ 0 ], "stageCoord": x [ 1 ]} for x in routeDetails.allStages ]
+        routeDetails.allStages = [ {"stageName": x [ 1 ], "stageCoord": x [ 0 ]} for x in routeDetails.allStages ]
         for i in range(len(routeDetails.routes [ 0 ] [ 'waypoints' ])): routeDetails.allStages [ i ] [
             'stageCoord' ] = [ routeDetails.routes [ 0 ] [ 'waypoints' ] [ i ] [ 'latLng' ] [ 'lat' ],
                                routeDetails.routes [ 0 ] [ 'waypoints' ] [ i ] [ 'latLng' ] [ 'lng' ] ]
         routeData = {
+            "busNumber": routeDetails.busNumber,
+            "busPlateNumber":routeDetails.busPlateNumber,
+            "driverName": routeDetails.driverName,
+            "driverMobile": routeDetails.driverMobile,
+            "busRunningStatus":False,
             "routeName": routeDetails.routeName,
             "routeStageWithNames": routeDetails.allStages,
             "routeAllCoord": routeDetails.routes [ 0 ] [ 'coordinates' ],
-            "busNoAllotedToRoute": routeDetails.busNumber,
+            "allotedBusId": "0",
             "totalRouteDistance": routeDetails.routes [ 0 ] [ 'summary' ] [ 'totalDistance' ],
             "routeMoreInfo": routeDetails.routes,
             "areaName": routeDetails.areaName,
             "busMoveDirection": "DOWN",
             "lastUpdatedLoc": [ ],
             "remarks": [ ],
-            "routeStageVisitInfo": [ ],
+            "routeStageVisitInfo": {},
             "curStage": 0,
-            "driverName": routeDetails.driverName
         }
-        DbOut = self.dbManager.createRoute(routeData)
-        return 'Route Created Successfully', DbOut
+        route= self.dbManager.createRoute(routeData)
+        return route
+    def modifyRoute(self, routeDetails):
+        if "routes" in routeDetails:
+            routeDetails [ "routeAllCoord" ] = routeDetails [ 'routes' ] [ 0 ] [ 'coordinates' ]
+            routeDetails [ "totalRouteDistance" ] = routeDetails [ 'routes' ] [ 0 ] [ 'summary' ] [ 'totalDistance' ]
+            routeDetails [ "routeMoreInfo" ] = routeDetails [ 'routes' ]
+            routeDetails [ 'allStages' ] = [ {"stageName": x [ 1 ], "stageCoord": x [ 0 ]} for x in
+                                             routeDetails [ 'allStages' ] ]
+            for i in range(len(routeDetails [ 'routes' ] [ 0 ] [ 'waypoints' ])): routeDetails [ 'allStages' ] [ i ] [
+                'stageCoord' ] = [ routeDetails [ 'routes' ] [ 0 ] [ 'waypoints' ] [ i ] [ 'latLng' ] [ 'lat' ],
+                                   routeDetails [ 'routes' ] [ 0 ] [ 'waypoints' ] [ i ] [ 'latLng' ] [ 'lng' ] ]
+            routeDetails [ "routeStageWithNames" ] = routeDetails [ 'allStages' ]
+        dbOut = self.dbManager.modifyRoute(routeDetails)
+        return dbOut
+
 
     async def fetchLocationAndDirection(self, busId):
         location = await self.dbManager.fetchRouteLocation(busId)
