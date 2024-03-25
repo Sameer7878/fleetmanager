@@ -45,7 +45,7 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="{{ url_for('tracking') }}">Tracking</a>
                                     <a class="dropdown-item" href="{{ url_for('routing') }}">Routing</a>
-                                    <a class="dropdown-item" href="/">Location History</a>
+                                    <a class="dropdown-item" href="/locationHistory/">Location History</a>
 
                                 </div>
                             </li>
@@ -124,6 +124,14 @@
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 <script src="/static/js/routing.js"></script>
 <script>
+    (function (){
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        if(urlParams.has('editRoute')){
+            editRouteDetails(urlParams.get('editRoute'))
+        }
+
+    })();
     (function ($) {
         "use strict";
 

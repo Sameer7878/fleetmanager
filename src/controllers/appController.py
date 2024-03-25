@@ -15,7 +15,7 @@ from middleware.customAPIsErrors import customApiError
 class AppController:
     def __init__(self):
         self.dbManager = DBManager()
-        self.STREAM_DELAY=1
+        self.STREAM_DELAY = 1
 
     def createRoute(self, routeDetails):
         if not (routeDetails and routeDetails.allStages and routeDetails.routes):
@@ -26,10 +26,10 @@ class AppController:
                                routeDetails.routes [ 0 ] [ 'waypoints' ] [ i ] [ 'latLng' ] [ 'lng' ] ]
         routeData = {
             "busNumber": routeDetails.busNumber,
-            "busPlateNumber":routeDetails.busPlateNumber,
+            "busPlateNumber": routeDetails.busPlateNumber,
             "driverName": routeDetails.driverName,
             "driverMobile": routeDetails.driverMobile,
-            "busRunningStatus":False,
+            "busRunningStatus": False,
             "routeName": routeDetails.routeName,
             "routeStageWithNames": routeDetails.allStages,
             "routeAllCoord": routeDetails.routes [ 0 ] [ 'coordinates' ],
@@ -42,9 +42,12 @@ class AppController:
             "remarks": [ ],
             "routeStageVisitInfo": {},
             "curStage": 0,
+            "geofenceFlag": False,
+            "geofenceDistance": 5000
         }
-        route= self.dbManager.createRoute(routeData)
+        route = self.dbManager.createRoute(routeData)
         return route
+
     def modifyRoute(self, routeDetails):
         if "routes" in routeDetails:
             routeDetails [ "routeAllCoord" ] = routeDetails [ 'routes' ] [ 0 ] [ 'coordinates' ]
@@ -58,7 +61,6 @@ class AppController:
             routeDetails [ "routeStageWithNames" ] = routeDetails [ 'allStages' ]
         dbOut = self.dbManager.modifyRoute(routeDetails)
         return dbOut
-
 
     async def fetchLocationAndDirection(self, busId):
         location = await self.dbManager.fetchRouteLocation(busId)
@@ -84,15 +86,40 @@ class AppController:
             except Exception as e:
                 print(f"Error occurred: {e}")
 
-    async def updateBusNewLocation(self, location: list, busId):
-        return await self.dbManager.updateNewLocation(location, busId)
+    async def notificationEventGenerator(self, request):
+        while True:
+            try:
+                if await request.is_disconnected():
+                    print('break')
+                    break
+                unsentData = self.dbManager.getGeoDetails()
+                if unsentData:
+                    for bus in unsentData:
+                        yield json.dumps(
+                            {"event": "notify", "message": f"Bus No: {bus [ 'busNumber' ]} Entered Into The College"
+                             })
+                        self.dbManager.updateGeofenceState(bus [ 'busPlateNumber' ], True)
+                        await asyncio.sleep(self.STREAM_DELAY)
+                await asyncio.sleep(self.STREAM_DELAY)
+            except Exception as e:
+                print(f"Error occurred: {e}")
 
-    def getAllRoutes(self):
-        return self.dbManager.getAllRoutes()
+    async def updateBusNewLocation(self, location: list, busPlateNumber):
+        self.dbManager.updateBusHistory(busPlateNumber, location)
+        return await self.dbManager.updateNewLocation(location, busPlateNumber)
+
+    def getAllRoutes(self, filterOut={}):
+        return self.dbManager.getAllRoutes(filterOut)
 
     def getRouteDetails(self, busNo):
         routeData = self.dbManager.getRouteDetails(busNo)
         return routeData
+
+    def deleteRoute(self, busPlateNumber):
+        return self.dbManager.deleteBus(busPlateNumber)
+
+    def getLocationHistory(self, busPlateNumber, dateString):
+        return self.dbManager.getLocationHistory(busPlateNumber) [ 'routeStageVisitInfo' ] [ dateString ]
 
 
 class VehicleToServerConnectionManager:

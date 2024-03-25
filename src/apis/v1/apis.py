@@ -46,6 +46,12 @@ async def locationStream(request: Request, busPlateNumber):
                                headers={"Cache-Control": "no-cache"})
 
 
+@api.get('/notification/')
+async def locationStream(request: Request):
+    return EventSourceResponse(appController.notificationEventGenerator(request),
+                               headers={"Cache-Control": "no-cache"})
+
+
 @api.get('/getRouteData/')
 async def getRouteData(request: Request):
     routeDetails = appController.getRouteDetails(request.query_params.get("busPlateNumber"))
@@ -61,6 +67,22 @@ async def updateData(request: Request):
     return {"error": "Invalid request type"}
 
 
+@api.get("/deleteRoute/")
+async def deleteRoute(request: Request):
+    if request.query_params.get('busPlateNumber', None):
+        if appController.deleteRoute(request.query_params.get('busPlateNumber')):
+            return {"status": True, "message": "route deleted"}
+
+    return {"status": False, "message": "Invalid request type Or Invalid busPlateNumber"}
+
+
+@api.get('/getLocationHistory/')
+async def locationHistory(request: Request):
+    locationHistory = appController.getLocationHistory(request.query_params.get('busPlateNumber'),
+                                                       request.query_params.get('dateString'))
+    return {"busPlateNumber": request.query_params.get('busPlateNumber'), "locationHistory": locationHistory}
+
+
 @api.websocket('/EstablishConnectionWithServer/')
 async def websocket_endpoint(websocket: WebSocket):
     await connectionManager.connect(websocket)
@@ -71,7 +93,8 @@ async def websocket_endpoint(websocket: WebSocket):
             msgFromVehicle = ast.literal_eval(msgFromVehicle)
             if msgFromVehicle [ 'message' ] == 'connectionRequest':
                 await connectionManager.boardcast_to_single(
-                    {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ], "message": "Connection Established With Server"}, websocket)
+                    {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ],
+                     "message": "Connection Established With Server"}, websocket)
                 continue
             if await appController.updateBusNewLocation(msgFromVehicle [ 'vehicleCoord' ],
                                                         msgFromVehicle [ 'busPlateNumber' ]):
@@ -79,7 +102,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ], "message": "Location Updated"}, websocket)
             else:
                 await connectionManager.boardcast_to_single(
-                    {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ], "message": "Location Not Updated"}, websocket)
+                    {"busPlateNumber": msgFromVehicle [ 'busPlateNumber' ], "message": "Location Not Updated"},
+                    websocket)
 
     except WebSocketDisconnect:
         await connectionManager.disconnect(websocket)

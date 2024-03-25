@@ -5,7 +5,7 @@ import sys
 
 sys.path.append('src')
 from config.dbConfig import db
-from util.helperFunctions import getDateTime, getCurrentTime, getUniqueId
+from util.helperFunctions import getDateTime, getCurrentTime, getUniqueId, getCurrentDateForDb, getDistanceFromCollege
 from bson import json_util
 import json
 
@@ -33,9 +33,13 @@ class DBManager:
         routeData = self.routesCol.find_one({"busPlateNumber": busPlateNumber})
         return json.loads(json_util.dumps(routeData))
 
-    def getAllRoutes(self):
-        allRoutes = self.routesCol.find({})
+    def getAllRoutes(self, filterOut):
+        allRoutes = self.routesCol.find({}, filterOut)
         return json.loads(json_util.dumps(allRoutes))
+
+    def deleteBus(self, busPlateNumber):
+        self.routesCol.delete_one({"busPlateNumber": busPlateNumber})
+        return True
 
     async def fetchRouteLocation(self, busPlateNumber):
         location = self.routesCol.find_one({"busPlateNumber": busPlateNumber}, {"lastUpdatedLoc": 1})
@@ -45,8 +49,13 @@ class DBManager:
         return location [ 'lastUpdatedLoc' ] [ -1 ]
 
     async def updateNewLocation(self, location: list, busPlateNumber):
+        getDistancefromClg = getDistanceFromCollege(location [ 0 ], location [ 1 ])
+        if getDistancefromClg > 1000:
+            self.updateGeofenceState(busPlateNumber, False)
         self.routesCol.update_one({"busPlateNumber": busPlateNumber},
                                   {"$push": {"lastUpdatedLoc": {"$each": [ location ], "$slice": -10}}})
+        self.routesCol.update_one({"busPlateNumber": busPlateNumber},
+                                  {"$set": {"geofenceDistance": getDistancefromClg}})
         return True
 
     def getAllStagesCoords(self, busPlateNumber):
@@ -78,6 +87,23 @@ class DBManager:
         self.routesCol.update_one({"busPlateNumber": busPlateNumber}, {"$set": {"busMoveDirection": direction}})
         return True
 
-    def updateStagesDetails(self, busPlateNumber, stageDetails):
+    def updateBusHistory(self, busPlateNumber, locationHistory):
         self.routesCol.update_one({"busPlateNumber": busPlateNumber},
-                                  {"$push": {"routeStageVisitInfo": {"$each": [ stageDetails ], "$slice": -10000}}})
+                                  {"$push": {
+                                      f"routeStageVisitInfo.{getCurrentDateForDb()}": {"$each": [ locationHistory ]}}},
+                                  upsert=True)
+
+    def getLocationHistory(self, busPlateNumber):
+        locationHis = self.routesCol.find_one({"busPlateNumber": busPlateNumber}, {"routeStageVisitInfo": 1, "_id": 0})
+        print(locationHis)
+        return json.loads(json_util.dumps(locationHis))
+
+    def getGeoDetails(self):
+        unsentGeoFence = self.routesCol.find({"geofenceFlag": False, "geofenceDistance": {"$lt": 1000}},
+                                             {"geofenceFlag": 1, "geofenceDistance": 1, "busPlateNumber": 1,
+                                              "busNumber": 1, "_id": 0})
+        return json.loads(json_util.dumps(unsentGeoFence))
+
+    def updateGeofenceState(self, busPlateNumber, state):
+        self.routesCol.update_one({"busPlateNumber": busPlateNumber}, {"$set": {"geofenceFlag": state}})
+        return True

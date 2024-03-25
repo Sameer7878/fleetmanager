@@ -15,7 +15,10 @@ appController = AppController()
 
 @routes.get('/')
 def index(request: Request):
-    return templates.TemplateResponse('index.html', {'request': request})
+    driversDetails=appController.getAllRoutes(filterOut={"driverName":1,"driverMobile":1,"busNumber":1,"busPlateNumber":1,"routeName":1,"areaName":1,"_id":0,"busRunningStatus":1})
+    allBuses=len(driversDetails)
+    activeBuses=len([1 for bus in driversDetails if bus['busRunningStatus']])
+    return templates.TemplateResponse('index.html', {'request': request,'allRoutes':driversDetails,'allBuses':allBuses,'activeBuses':activeBuses,'inactiveBuses':allBuses-activeBuses})
 
 
 @routes.get('/auth/')
@@ -41,5 +44,8 @@ async def profile(request: Request):
 @routes.get('/logout/')
 async def logout(request: Request):
     return templates.TemplateResponse('logout.html',{"request":request})
-
+@routes.get('/locationHistory/')
+async def locationHistory(request: Request):
+    allRoutes = appController.getAllRoutes()
+    return templates.TemplateResponse('locationHistory.html',{"request":request,'allRoutes':allRoutes})
 
